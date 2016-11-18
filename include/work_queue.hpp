@@ -41,6 +41,7 @@
 #include <utility>
 #include <vector>
 #include "utilities/include/functions.hpp"
+#include "utilities/include/traits.hpp"
 
 
 namespace dsa
@@ -50,6 +51,7 @@ namespace dsa
      */
     class task
     {
+    public:
         template <class F, class ... Args>
         friend std::pair <
             task, std::future <typename std::result_of <F (Args...)>::type>
@@ -66,6 +68,13 @@ namespace dsa
             auto fut = dynamic_cast <model_type &> (*t._t).get_future ();
             return pair_type (std::move (t), std::move (fut));
         }
+
+        template <class F, class ... Args>
+        friend std::pair <
+            task, std::future <typename std::result_of <
+                F (typename <>::type...)
+            >::type>
+        >
 
         void operator() (void)
         {
