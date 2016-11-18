@@ -34,64 +34,105 @@
 #include <cstddef>
 #include <cstdint>
 #include <exception>
+#include <future>
 #include <memory>
 #include <mutex>
 #include <thread>
 #include <utility>
 #include <vector>
+#include "utilities/include/functions.hpp"
 
 
 namespace dsa
 {
-    template <class Callable, class ... Args>
-    inline typename std::result_of <Callable (Args...)>::type
-        invoke (Callable && c, Args && ... args)
-        noexcept (noexcept (
-            std::forward <Callable> (c) (std::forward <Args> (args)...)
-        ))
+    /*
+     * task; a std::packaged_task that also contains its own arguments.
+     */
+    class task
     {
-        return std::forward <Callable> (c) (std::forward <Args> (args)...);
-    }
+        template <class F, class ... Args>
+        friend std::pair <
+            task, std::future <typename std::result_of <F (Args...)>::type>
+        > make_ready_task (F && f, Args && ... args)
+        {
+            using pair_type = std::pair <
+                task, std::future <typename std::result_of <F (Args...)>::type>
+            >;
+            using model_type = ready_task_model <
+                typename std::result_of <F (Args...)>::type (Args...)
+            >;
 
-    template <class B, class T, class D>
-    inline auto invoke (T B::*p, D && d) -> decltype (std::forward <D> (d).*p)
-    {
-        return std::forward <D> (d).*p;
-    }
+            task t (std::forward <F> (f), std::forward <Args> (args)...);
+            auto fut = dynamic_cast <model_type &> (*t._t).get_future ();
+            return pair_type (std::move (t), std::move (fut));
+        }
 
-    template <class M, class Ptr>
-    inline auto invoke (M && m, Ptr && p)
-        -> decltype (*std::forward <Ptr> (p).*std::forward <M> (m))
-    {
-        return *std::forward <Ptr> (p).*std::forward <M> (m);
-    }
+        void operator() (void)
+        {
+            this->_t->invoke_ ();
+        }
 
-    template <class B, class T, class D, class ... Args>
-    inline auto invoke (T B::*f, D && d, Args && ... args)
-        -> decltype ((std::forward <D> (d).*f) (std::forward <Args> (args)...))
-    {
-        return (std::forward <D> (d).*f) (std::forward <Args> (args)...);
-    }
-
-    template <class F, class Ptr, class ... Args>
-    inline auto invoke (F && f, Ptr && p, Args && ... args)
-        -> decltype (
-            (*std::forward <Ptr> (p)).*std::forward <F> (f) (
-                std::forward <Args> (args)...
-            )
-        )
-    {
-        return (*std::forward <Ptr> (p)).*std::forward <F> (f) (
-            std::forward <Args> (args)...
-        );
-    }
-
-    class packaged_task
-    {
-        friend void invoke (packaged_task &);
+        bool ready (void) const noexcept
+        {
+            return this->_t->ready_ ();
+        }
 
     private:
-        std::unique_ptr <void *> _t;
+        struct ready_task_t {};
+        struct async_task_t {};
+
+        template <class F, class ... Args>
+        task (ready_task_t, F && f, Args && ... args)
+            : _t (
+                new ready_task_model <
+                    typename std::result_of <F (Args...)>::type (Args...)
+                > (std::forward <F> (f), std::forward <Args> (args)...)
+            )
+        {}
+
+        struct task_concept
+        {
+            virtual ~task_concept (void) noexcept {}
+            virtual void invoke_ (void) = 0;
+            virtual bool ready_ (void) const noexcept = 0;
+        };
+
+        template <class> struct ready_task_model;
+
+        template <class R, class ... Args>
+        struct ready_task_model <R (Args...)> : task_concept
+        {
+            template <class F>
+            explicit ready_task_model (F && f, Args && ... args)
+                : _f    (std::forward <F> (f))
+                , _args (std::make_tuple (std::forward <Args> (args)...))
+            {}
+
+            template <class F, class Allocator>
+            explicit ready_task_model (
+                std::allocator_arg_t, Allocator const & alloc,
+                F && f, Args && ... args
+            )
+                : _f    (std::allocator_arg_t {}, alloc, std::forward <F> (f))
+                , _args (std::make_tuple (std::forward <Args> (args)...))
+            {}
+
+            void invoke_ (void) override
+            {
+                utility::apply (this->_f, this->_args);
+            }
+
+            bool ready_ (void) const noexcept override
+            {
+                return true;
+            }
+
+        private:
+            std::packaged_task <R (Args...)> _f;
+            std::tuple <Args...> _args;
+        };
+
+        std::unique_ptr <task_concept> _t;
     };
 
     template <class Allocator /*= std::allocator <...>*/>
