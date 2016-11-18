@@ -24,6 +24,7 @@
 #define DSA_UTILITY_TRAITS_HPP
 
 #include <functional>
+#include <future>
 #include <type_traits>
 
 
@@ -37,6 +38,30 @@ namespace utility
     template <class T>
     struct is_reference_wrapper <std::reference_wrapper <T>>
         : std::true_type {};
+
+    template <class>
+    struct decay_reference_wrapper {};
+
+    template <class T>
+    struct decay_reference_wrapper <std::reference_wrapper <T>>
+    {
+        using type = T;
+    };
+
+    template <class>
+    struct is_future : std::false_type {};
+
+    template <class T>
+    struct is_future <std::future <T>> : std::true_type {};
+
+    template <class>
+    struct decay_future {};
+
+    template <class T>
+    struct decay_future <std::future <T>>
+    {
+        using type = T;
+    };
 }   // namespace utility
 }   // namespace dsa
 
