@@ -39,8 +39,11 @@ namespace utility
     struct is_reference_wrapper <std::reference_wrapper <T>>
         : std::true_type {};
 
-    template <class>
-    struct decay_reference_wrapper {};
+    template <class T>
+    struct decay_reference_wrapper
+    {
+        using type = T;
+    };
 
     template <class T>
     struct decay_reference_wrapper <std::reference_wrapper <T>>
@@ -54,8 +57,11 @@ namespace utility
     template <class T>
     struct is_future <std::future <T>> : std::true_type {};
 
-    template <class>
-    struct decay_future {};
+    template <class T>
+    struct decay_future 
+    {
+        using type = T;
+    };
 
     template <class T>
     struct decay_future <std::future <T>>
