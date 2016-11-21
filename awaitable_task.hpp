@@ -36,9 +36,9 @@
 #include <thread>
 #include <utility>
 #include <vector>
-#include "utilities/include/functions.hpp"
-#include "utilities/include/sequence.hpp"
-#include "utilities/include/traits.hpp"
+#include "utilities/functions.hpp"
+#include "utilities/sequence.hpp"
+#include "utilities/traits.hpp"
 
 
 namespace dsa
