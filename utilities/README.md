@@ -22,7 +22,7 @@ daltonmwoodard@gmail.com
 
 ### official repository
 
-#### bstree
+#### utilities
 
 https://github.com/daltonwoodard/utilities.git
 
