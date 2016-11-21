@@ -693,8 +693,6 @@ namespace dsa
             this->queues_ [idx % this->nthreads_].push (std::move (t));
         }
     };
-
-    awaitable_task_system <> s;
 }   // namespace dsa
 
 #endif  // #ifndef DSA_AWAITABLE_TASK_HPP
