@@ -1,11 +1,14 @@
-work_queue
-==========
+awaitable_task
+==============
 
 ## description
 
-A task-stealing work queue implementation for C++11 and later. This
-implementation is part of the [dsa (data structures and algorithms) library]
-(https://github.com/daltonwoodard/dsa.git).
+A work-stealing tasking system implementation for C++11 and later based on
+awaitable tasks: tasks whose arguments depend on the results obtained from
+`std::future` objects. The implementation is inspired in part by Sean Parent's
+"Better Code: Concurrency" talk; link to [Sean's blog]
+(http://sean-parent.stlab.cc.). This implementation is part of the [dsa (data
+structures and algorithms) library](https://github.com/daltonwoodard/dsa.git).
 
 ## dependencies
 
@@ -25,7 +28,7 @@ daltonmwoodard@gmail.com
 
 #### bstree
 
-https://github.com/daltonwoodard/work-queue.git
+https://github.com/daltonwoodard/awaitable_task.git
 
 #### dsa
 
@@ -35,7 +38,7 @@ https://github.com/daltonwoodard/dsa.git
 
 All of the following information is reproduced in [COPYRIGHT](COPYRIGHT.txt).
 
-work_queue is distributed under a dual MIT License and Apache-2.0 License as
+awaitable_task is distributed under a dual MIT License and Apache-2.0 License as
 part of the dsa library. You, the licensee, may choose either at your option.
 The MIT License is GPL compatible, while the Apache-2.0 License is not, so
 please take this into consideration.

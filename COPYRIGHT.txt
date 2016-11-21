@@ -1,6 +1,6 @@
 # dsa licensing
 
-work_queue is distributed under a dual MIT License and Apache-2.0 License as
+awaitable_task is distributed under a dual MIT License and Apache-2.0 License as
 part of the dsa library. You, the licensee, may choose either at your option.
 The MIT License is GPL compatible, while the Apache-2.0 License is not, so
 please take this into consideration.
