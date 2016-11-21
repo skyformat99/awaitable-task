@@ -4,7 +4,7 @@
 //
 // author: Dalton Woodard
 // contact: daltonmwoodard@gmail.com
-// repository: https://github.com/daltonwoodard/awaitable_task.git
+// repository: https://github.com/daltonwoodard/awaitable-task.git
 // license:
 //
 // Copyright (c) 2016 DaltonWoodard. See the COPYRIGHT.md file at the top-level

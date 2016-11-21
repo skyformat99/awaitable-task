@@ -26,9 +26,9 @@ daltonmwoodard@gmail.com
 
 ### official repository
 
-#### bstree
+#### awaitable-task
 
-https://github.com/daltonwoodard/awaitable_task.git
+https://github.com/daltonwoodard/awaitable-task.git
 
 #### dsa
 
