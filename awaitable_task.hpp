@@ -456,6 +456,7 @@ namespace dsa
             task_queue (task_queue && other) noexcept
                 : tasks_ (std::move (other).tasks_)
                 , last_  (std::move (other).last_)
+                , done_  (other.done_.load ())
             {}
 
             void set_done (void)
