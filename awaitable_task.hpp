@@ -451,6 +451,13 @@ namespace dsa
                 : tasks_ {}
             {}
 
+            task_queue (task_queue const &) = delete;
+
+            task_queue (task_queue && other) noexcept
+                : tasks_ (std::move (other).tasks_)
+                , last_  (std::move (other).last_)
+            {}
+
             void set_done (void)
             {
                 this->done_.store (true);
@@ -554,7 +561,7 @@ namespace dsa
 
         std::vector <task_queue> queues_;
         std::vector <std::thread> threads_;
-        typename Allocator::template rebind <awaitable_task::task_concept>
+        typename Allocator::template rebind <awaitable_task::task_concept>::other
             alloc_;
         std::size_t nthreads_;
         std::size_t current_index_ {0};
@@ -594,7 +601,7 @@ namespace dsa
         {
             this->queues_.reserve (nthreads);
             for (std::size_t th = 0; th < nthreads; ++th)
-                this->queues_.emplace_back (alloc);
+                this->queues_.emplace_back ();
 
             this->threads_.reserve (nthreads);
             for (std::size_t th = 0; th < nthreads; ++th)
@@ -685,6 +692,8 @@ namespace dsa
             this->queues_ [idx % this->nthreads_].push (std::move (t));
         }
     };
+
+    awaitable_task_system <> s;
 }   // namespace dsa
 
 #endif  // #ifndef DSA_AWAITABLE_TASK_HPP
